@@ -22,15 +22,30 @@ const covid19ImpactEstimator = (data) => {
       factor = Math.trunc(timeToElapse / 3);
       period = timeToElapse;
   }
+
+  // Global Functions
+
+  const lostMoney = (infections, avgIncome, avgPopulation, days) => {
+    const outcome = infections * avgIncome * avgPopulation;
+    const result = (outcome / days);
+    return parseFloat((result).toFixed(2));
+  };
+
+  const icuCases = (infections, num) => {
+    const output = infections * num;
+    return Math.trunc(output);
+  };
+
+  const ventilatorCases = (infections, num) => {
+    const output = infections * num;
+    return Math.trunc(output);
+  };
+
   //= ===========impact object computations
   const currentlyInfectedInfact = reportedCases * 10;
   const infectionsByRequestedTimeImpact = currentlyInfectedInfact * (2 ** factor);
   const impactCasesByRequestedTime = Math.trunc(0.15 * infectionsByRequestedTimeImpact);
   const impactAvailableBeds = Math.trunc((totalHospitalBeds * 0.35) - impactCasesByRequestedTime);
-  const impactCasesForICU = infectionsByRequestedTimeImpact * 0.05;
-  const impactCasesForVentilators = 0.02 * infectionsByRequestedTimeImpact;
-  const impactDollarsInFlight = parseFloat((infectionsByRequestedTimeImpact
-    * region.avgDailyIncomePopulation * region.avgDailyIncomeInUSD) / period);
 
 
   //= ===========severe infact object computations
@@ -38,10 +53,7 @@ const covid19ImpactEstimator = (data) => {
   const infectionsByRequestedTimeSevere = currentlyInfectedSevere * (2 ** factor);
   const severeCasesByRequested = Math.trunc(infectionsByRequestedTimeSevere * 0.15);
   const severeAvailabelBeds = Math.trunc((totalHospitalBeds * 0.35) - severeCasesByRequested);
-  const severeCasesForICU = infectionsByRequestedTimeSevere * 0.05;
-  const severeCasesForVentilators = infectionsByRequestedTimeSevere * 0.02;
-  const severeDollarsInFlight = parseFloat((infectionsByRequestedTimeSevere
-    * region.avgDailyIncomePopulation * region.avgDailyIncomeInUSD) / period);
+
 
   // impact object
   const impact = {
@@ -49,9 +61,10 @@ const covid19ImpactEstimator = (data) => {
     infectionsByRequestedTime: infectionsByRequestedTimeImpact,
     severeCasesByRequestedTime: impactCasesByRequestedTime,
     hospitalBedsByRequestedTime: impactAvailableBeds,
-    casesForICUByRequestedTime: impactCasesForICU,
-    casesForVentilatorsByRequestedTime: impactCasesForVentilators,
-    dollarsInFlight: (impactDollarsInFlight).toFixed(2)
+    casesForICUByRequestedTime: icuCases(infectionsByRequestedTimeImpact, 0.05),
+    casesForVentilatorsByRequestedTime: ventilatorCases(infectionsByRequestedTimeImpact, 0.02),
+    dollarsInFlight: lostMoney(infectionsByRequestedTimeImpact, region.avgDailyIncomeInUSD,
+      region.avgDailyIncomePopulation, period)
   };
   // severe impact object
 
@@ -60,9 +73,10 @@ const covid19ImpactEstimator = (data) => {
     infectionsByRequestedTime: infectionsByRequestedTimeSevere,
     severeCasesByRequestedTime: severeCasesByRequested,
     hospitalBedsByRequestedTime: severeAvailabelBeds,
-    casesForICUByRequestedTime: severeCasesForICU,
-    casesForVentilatorsByRequestedTime: severeCasesForVentilators,
-    dollarsInFlight: (severeDollarsInFlight).toFixed(2)
+    casesForICUByRequestedTime: icuCases(infectionsByRequestedTimeSevere, 0.05),
+    casesForVentilatorsByRequestedTime: ventilatorCases(infectionsByRequestedTimeSevere, 0.02),
+    dollarsInFlight: lostMoney(infectionsByRequestedTimeSevere, region.avgDailyIncomeInUSD,
+      region.avgDailyIncomePopulation, period)
   };
   return {
     data,

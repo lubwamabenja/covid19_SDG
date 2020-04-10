@@ -19,7 +19,7 @@ export const infectionProjections = (currentlyInfected, days) => {
 };
 export const moneyLost = (infectionsByRequestedTime, percentageIncome, avgIncome, days) => {
   const estimatedLoss = infectionsByRequestedTime * percentageIncome * avgIncome * days;
-  return parseFloat(estimatedLoss.toFixed(2));
+  return estimatedLoss;
 };
 export const impactCalculator = ({
   reportedCases,

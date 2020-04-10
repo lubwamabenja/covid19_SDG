@@ -49,7 +49,7 @@ export const prototypeEstimator = ({
     hospitalBedsByRequestedTime: availableBeds(totalHospitalBeds, severeCasesByRequestedTime),
     casesForICUByRequestedTime: Math.floor(0.05 * infectionsByRequestedTime),
     casesForVentilatorsByRequestedTime: Math.floor(0.02 * infectionsByRequestedTime),
-    dollarsInFlight: (lostMoney(infectionsByRequestedTime * region.avgDailyIncomeInUSD
-      * region.avgDailyIncomePopulation, days)).toFixed(2)
+    dollarsInFlight: lostMoney(infectionsByRequestedTime * region.avgDailyIncomeInUSD
+      * region.avgDailyIncomePopulation, days)
   };
 };

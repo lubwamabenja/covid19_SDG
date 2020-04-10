@@ -32,8 +32,11 @@ const covid19ImpactEstimator = (data) => {
   const impactAvailableBeds = Math.trunc((totalHospitalBeds * 0.35) - impactCasesByRequestedTime);
   const impactCasesForICU = infectionsByRequestedTimeImpact * 0.05;
   const impactCasesForVentilators = 0.02 * infectionsByRequestedTimeImpact;
-  const impactDollarsInFlight = infectionsByRequestedTimeImpact * region.avgDailyIncomePopulation
-                                      * region.avgDailyIncomeInUSD * period;
+
+  const moneyLost = (infectionsByRequestedTime, percentageIncome, avgIncome, days) => {
+    const estimatedLoss = infectionsByRequestedTime * percentageIncome * avgIncome * days;
+    return parseFloat(estimatedLoss.toFixed(2));
+  };
 
 
   //= ===========severe infact object computations
@@ -43,8 +46,7 @@ const covid19ImpactEstimator = (data) => {
   const severeAvailabelBeds = Math.trunc((totalHospitalBeds * 0.35) - severeCasesByRequested);
   const severeCasesForICU = infectionsByRequestedTimeSevere * 0.05;
   const severeCasesForVentilators = infectionsByRequestedTimeSevere * 0.02;
-  const severeDollarsInFlight = infectionsByRequestedTimeSevere * region.avgDailyIncomePopulation
-                                      * region.avgDailyIncomeInUSD * period;
+
   // impact object
   const impact = {
     currentlyInfected: currentlyInfectedInfact,
@@ -53,7 +55,8 @@ const covid19ImpactEstimator = (data) => {
     hospitalBedsByRequestedTime: impactAvailableBeds,
     casesForICUByRequestedTime: impactCasesForICU,
     casesForVentilatorsByRequestedTime: impactCasesForVentilators,
-    dollarsInFlight: impactDollarsInFlight
+    dollarsInFlight: moneyLost(infectionsByRequestedTimeImpact, region.avgDailyIncomePopulation,
+      region.avgDailyIncomeInUSD, period)
   };
     // severe impact object
 
@@ -65,7 +68,8 @@ const covid19ImpactEstimator = (data) => {
     hospitalBedsByRequestedTime: severeAvailabelBeds,
     casesForICUByRequestedTime: severeCasesForICU,
     casesForVentilatorsByRequestedTime: severeCasesForVentilators,
-    dollarsInFlight: severeDollarsInFlight
+    dollarsInFlight: moneyLost(infectionsByRequestedTimeSevere, region.avgDailyIncomePopulation,
+      region.avgDailyIncomeInUSD, period)
   };
   return {
     data,

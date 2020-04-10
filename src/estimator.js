@@ -10,10 +10,6 @@ const covid19ImpactEstimator = (data) => {
   let factor;
   let period;
   switch (periodType) {
-    case 'days' || 'day':
-      factor = Math.trunc(timeToElapse / 3);
-      period = timeToElapse;
-      break;
     case 'weeks' || 'day':
       factor = Math.trunc((timeToElapse * 7) / 3);
       period = timeToElapse * 7;
@@ -23,7 +19,8 @@ const covid19ImpactEstimator = (data) => {
       period = timeToElapse * 30;
       break;
     default:
-      break;
+      factor = Math.trunc(timeToElapse / 3);
+      period = timeToElapse;
   }
   //= ===========impact object computations
   const currentlyInfectedInfact = reportedCases * 10;
@@ -32,8 +29,8 @@ const covid19ImpactEstimator = (data) => {
   const impactAvailableBeds = Math.trunc((totalHospitalBeds * 0.35) - impactCasesByRequestedTime);
   const impactCasesForICU = infectionsByRequestedTimeImpact * 0.05;
   const impactCasesForVentilators = 0.02 * infectionsByRequestedTimeImpact;
-  const impactDollarsInFlight = infectionsByRequestedTimeImpact * region.avgDailyIncomePopulation
-                                    * region.avgDailyIncomeInUSD * period;
+  const impactDollarsInFlight = (infectionsByRequestedTimeImpact * region.avgDailyIncomePopulation
+                                    * region.avgDailyIncomeInUSD) / period;
 
 
   //= ===========severe infact object computations
@@ -43,8 +40,8 @@ const covid19ImpactEstimator = (data) => {
   const severeAvailabelBeds = Math.trunc((totalHospitalBeds * 0.35) - severeCasesByRequested);
   const severeCasesForICU = infectionsByRequestedTimeSevere * 0.05;
   const severeCasesForVentilators = infectionsByRequestedTimeSevere * 0.02;
-  const severeDollarsInFlight = infectionsByRequestedTimeSevere * region.avgDailyIncomePopulation
-                                    * region.avgDailyIncomeInUSD * period;
+  const severeDollarsInFlight = (infectionsByRequestedTimeSevere * region.avgDailyIncomePopulation
+                                    * region.avgDailyIncomeInUSD) / period;
 
   // impact object
   const impact = {
@@ -54,7 +51,7 @@ const covid19ImpactEstimator = (data) => {
     hospitalBedsByRequestedTime: impactAvailableBeds,
     casesForICUByRequestedTime: impactCasesForICU,
     casesForVentilatorsByRequestedTime: impactCasesForVentilators,
-    dollarsInFlight: impactDollarsInFlight
+    dollarsInFlight: (impactDollarsInFlight).toFixed(2)
   };
   // severe impact object
 
@@ -65,7 +62,7 @@ const covid19ImpactEstimator = (data) => {
     hospitalBedsByRequestedTime: severeAvailabelBeds,
     casesForICUByRequestedTime: severeCasesForICU,
     casesForVentilatorsByRequestedTime: severeCasesForVentilators,
-    dollarsInFlight: severeDollarsInFlight
+    dollarsInFlight: (severeDollarsInFlight).toFixed(2)
   };
   return {
     data,

@@ -1,5 +1,5 @@
 // Function to calculate days
-const computeDays = (period, value) => {
+export const computeDays = (period, value) => {
   switch (period) {
     case 'months' || 'month':
       return value * 30;
@@ -12,7 +12,7 @@ const computeDays = (period, value) => {
 
 // Global Functions
 
-const lostMoney = (infections, avgIncome, avgPopulation, days) => {
+export const lostMoney = (infections, avgIncome, avgPopulation, days) => {
   const outcome = infections * avgIncome * avgPopulation;
   const result = (outcome / days);
   return Math.floor(result);

@@ -28,7 +28,7 @@ const covid19ImpactEstimator = (data) => {
   const lostMoney = (infections, avgIncome, avgPopulation, days) => {
     const outcome = infections * avgIncome * avgPopulation;
     const result = (outcome / days);
-    return parseFloat((result).toFixed(2));
+    return parseFloat(result);
   };
 
   const icuCases = (infections, num) => {
@@ -63,8 +63,8 @@ const covid19ImpactEstimator = (data) => {
     hospitalBedsByRequestedTime: impactAvailableBeds,
     casesForICUByRequestedTime: icuCases(infectionsByRequestedTimeImpact, 0.05),
     casesForVentilatorsByRequestedTime: ventilatorCases(infectionsByRequestedTimeImpact, 0.02),
-    dollarsInFlight: lostMoney(infectionsByRequestedTimeImpact, region.avgDailyIncomeInUSD,
-      region.avgDailyIncomePopulation, period)
+    dollarsInFlight: (lostMoney(infectionsByRequestedTimeImpact, region.avgDailyIncomeInUSD,
+      region.avgDailyIncomePopulation, period)).toFixed(2);
   };
   // severe impact object
 
@@ -75,8 +75,8 @@ const covid19ImpactEstimator = (data) => {
     hospitalBedsByRequestedTime: severeAvailabelBeds,
     casesForICUByRequestedTime: icuCases(infectionsByRequestedTimeSevere, 0.05),
     casesForVentilatorsByRequestedTime: ventilatorCases(infectionsByRequestedTimeSevere, 0.02),
-    dollarsInFlight: lostMoney(infectionsByRequestedTimeSevere, region.avgDailyIncomeInUSD,
-      region.avgDailyIncomePopulation, period)
+    dollarsInFlight: (lostMoney(infectionsByRequestedTimeSevere, region.avgDailyIncomeInUSD,
+      region.avgDailyIncomePopulation, period)).toFixed(2)
   };
   return {
     data,

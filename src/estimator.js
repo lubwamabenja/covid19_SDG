@@ -29,8 +29,8 @@ const covid19ImpactEstimator = (data) => {
   const impactAvailableBeds = Math.trunc((totalHospitalBeds * 0.35) - impactCasesByRequestedTime);
   const impactCasesForICU = infectionsByRequestedTimeImpact * 0.05;
   const impactCasesForVentilators = 0.02 * infectionsByRequestedTimeImpact;
-  const impactDollarsInFlight = (infectionsByRequestedTimeImpact * region.avgDailyIncomePopulation
-                                    * region.avgDailyIncomeInUSD) / period;
+  const impactDollarsInFlight = parseFloat((infectionsByRequestedTimeImpact
+    * region.avgDailyIncomePopulation * region.avgDailyIncomeInUSD) / period);
 
 
   //= ===========severe infact object computations
@@ -40,8 +40,8 @@ const covid19ImpactEstimator = (data) => {
   const severeAvailabelBeds = Math.trunc((totalHospitalBeds * 0.35) - severeCasesByRequested);
   const severeCasesForICU = infectionsByRequestedTimeSevere * 0.05;
   const severeCasesForVentilators = infectionsByRequestedTimeSevere * 0.02;
-  const severeDollarsInFlight = (infectionsByRequestedTimeSevere * region.avgDailyIncomePopulation
-                                    * region.avgDailyIncomeInUSD) / period;
+  const severeDollarsInFlight = parseFloat((infectionsByRequestedTimeSevere
+    * region.avgDailyIncomePopulation * region.avgDailyIncomeInUSD) / period);
 
   // impact object
   const impact = {

@@ -1,109 +1,87 @@
-const Output = ({
-  avgDailyIncomeInUSD,
-  avgDailyIncomePopulation,
-  periodType,
-  timeToElapse,
-  reportedCases,
-  totalHospitalBeds,
-  estimationFactor
-}) => {
-  this.periodType = periodType;
-  this.timeToElapse = timeToElapse;
-  this.reportedCases = reportedCases;
-  this.totalHospitalBeds = totalHospitalBeds;
-  this.avgDailyIncomePopulation = avgDailyIncomePopulation;
-  this.avgDailyIncomeInUSD = avgDailyIncomeInUSD;
-  this.estimationFactor = estimationFactor;
-};
-/* eslint-disable consistent-return */
-
-Output.prototype.convertToDays = () => {
-  if (this.periodType === 'days' || this.periodType === 'day') {
-    return this.timeToElapse;
-  }
-  if (this.periodType === 'weeks' || this.periodType === 'week') {
-    return this.timeToElapse * 7;
-  }
-  if (this.periodType === 'months' || this.periodType === 'month') {
-    return this.timeToElapse * 30;
-  }
-};
-
-Output.prototype.rateOfInfection = () => {
-  const days = this.convertToDays() / 3;
-
-  return 2 ** Math.trunc(days);
-};
-
-Output.prototype.currentlyInfected = () => this.reportedCases * this.estimationFactor;
-Output.prototype.infectionsByRequestedTime = () => this.currentlyInfected()
-* this.rateOfInfection();
-Output.prototype.severeCasesByRequestedTime = () => Math.trunc(this.infectionsByRequestedTime()
-* 0.15);
-Output.prototype.hospitalBedsByRequestedTime = () => Math.trunc((this.totalHospitalBeds * 0.35)
-- this.severeCasesByRequestedTime());
-
-Output.prototype.casesForICUByRequestedTime = () => Math.trunc(this.infectionsByRequestedTime()
-* 0.05);
-
-Output.prototype.casesForVentilatorsByRequestedTime = () => Math.trunc(this
-  .infectionsByRequestedTime()
-* 0.02);
-Output.prototype.dollarsInFlight = () => {
-  const factor = this.avgDailyIncomePopulation * this.avgDailyIncomeInUSD;
-  const days = this.convertToDays();
-  const res = (this.infectionsByRequestedTime() * factor) / days;
-  return Math.trunc(res);
-};
-
-
-Output.prototype.results = () => ({
-  currentlyInfected: this.currentlyInfected(),
-  infectionsByRequestedTime: this.infectionsByRequestedTime(),
-  severeCasesByRequestedTime: this.severeCasesByRequestedTime(),
-  hospitalBedsByRequestedTime: this.hospitalBedsByRequestedTime(),
-  casesForICUByRequestedTime: this.casesForICUByRequestedTime(),
-  casesForVentilatorsByRequestedTime: this.casesForVentilatorsByRequestedTime(),
-  dollarsInFlight: this.dollarsInFlight()
-
-});
-
 const covid19ImpactEstimator = (data) => {
   const {
-    region,
+    reportedCases,
     periodType,
     timeToElapse,
-    reportedCases,
-    totalHospitalBeds
+    totalHospitalBeds,
+    region
   } = data;
-  const { avgDailyIncomeInUSD, avgDailyIncomePopulation } = region;
+  // global variable
+  let factor;
+  let period;
+  switch (periodType) {
+    case 'weeks' || 'day':
+      factor = Math.trunc((timeToElapse * 7) / 3);
+      period = timeToElapse * 7;
+      break;
+    case 'months' || 'month':
+      factor = Math.trunc((timeToElapse * 30) / 3);
+      period = timeToElapse * 30;
+      break;
+    default:
+      factor = Math.trunc(timeToElapse / 3);
+      period = timeToElapse;
+  }
+
+  // Global Functions
+
+  const lostMoney = (infections, avgIncome, avgPopulation, days) => {
+    const outcome = infections * avgIncome * avgPopulation;
+    const result = (outcome / days);
+    return result;
+  };
+
+  const icuCases = (infections, num) => {
+    const output = infections * num;
+    return Math.trunc(output);
+  };
+
+  const ventilatorCases = (infections, num) => {
+    const output = infections * num;
+    return Math.trunc(output);
+  };
+
+  //= ===========impact object computations
+  const currentlyInfectedInfact = reportedCases * 10;
+  const infectionsByRequestedTimeImpact = currentlyInfectedInfact * (2 ** factor);
+  const impactCasesByRequestedTime = Math.trunc(0.15 * infectionsByRequestedTimeImpact);
+  const impactAvailableBeds = Math.trunc((totalHospitalBeds * 0.35) - impactCasesByRequestedTime);
 
 
-  const impact = new Output({
-    avgDailyIncomeInUSD,
-    avgDailyIncomePopulation,
-    periodType,
-    timeToElapse,
-    reportedCases,
-    totalHospitalBeds,
-    estimationFactor: 10
-  });
+  //= ===========severe infact object computations
+  const currentlyInfectedSevere = reportedCases * 50;
+  const infectionsByRequestedTimeSevere = currentlyInfectedSevere * (2 ** factor);
+  const severeCasesByRequested = Math.trunc(infectionsByRequestedTimeSevere * 0.15);
+  const severeAvailabelBeds = Math.trunc((totalHospitalBeds * 0.35) - severeCasesByRequested);
 
-  const severeImpact = new Output({
-    avgDailyIncomeInUSD,
-    avgDailyIncomePopulation,
-    periodType,
-    timeToElapse,
-    reportedCases,
-    totalHospitalBeds,
-    estimationFactor: 50
-  });
 
+  // impact object
+  const impact = {
+    currentlyInfected: currentlyInfectedInfact,
+    infectionsByRequestedTime: infectionsByRequestedTimeImpact,
+    severeCasesByRequestedTime: impactCasesByRequestedTime,
+    hospitalBedsByRequestedTime: impactAvailableBeds,
+    casesForICUByRequestedTime: icuCases(infectionsByRequestedTimeImpact, 0.05),
+    casesForVentilatorsByRequestedTime: ventilatorCases(infectionsByRequestedTimeImpact, 0.02),
+    dollarsInFlight: (lostMoney(infectionsByRequestedTimeImpact, region.avgDailyIncomeInUSD,
+      region.avgDailyIncomePopulation, period)).toFixed(2)
+  };
+  // severe impact object
+
+  const severeImpact = {
+    currentlyInfected: currentlyInfectedSevere,
+    infectionsByRequestedTime: infectionsByRequestedTimeSevere,
+    severeCasesByRequestedTime: severeCasesByRequested,
+    hospitalBedsByRequestedTime: severeAvailabelBeds,
+    casesForICUByRequestedTime: icuCases(infectionsByRequestedTimeSevere, 0.05),
+    casesForVentilatorsByRequestedTime: ventilatorCases(infectionsByRequestedTimeSevere, 0.02),
+    dollarsInFlight: (lostMoney(infectionsByRequestedTimeSevere, region.avgDailyIncomeInUSD,
+      region.avgDailyIncomePopulation, period)).toFixed(2)
+  };
   return {
     data,
-    impact: impact.results(),
-    severeImpact: severeImpact.results()
+    impact,
+    severeImpact
   };
 };
-
-module.exports = covid19ImpactEstimator;
+export default covid19ImpactEstimator;

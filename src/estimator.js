@@ -64,7 +64,7 @@ const covid19ImpactEstimator = (data) => {
     casesForICUByRequestedTime: icuCases(infectionsByRequestedTimeImpact, 0.05),
     casesForVentilatorsByRequestedTime: ventilatorCases(infectionsByRequestedTimeImpact, 0.02),
     dollarsInFlight: (lostMoney(infectionsByRequestedTimeImpact, region.avgDailyIncomeInUSD,
-      region.avgDailyIncomePopulation, period)).toFixed(2);
+      region.avgDailyIncomePopulation, period)).toFixed(2)
   };
   // severe impact object
 

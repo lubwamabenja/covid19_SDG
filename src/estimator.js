@@ -7,23 +7,18 @@ const covid19ImpactEstimator = (data) => {
     region
   } = data;
     // global variable
-  let factor;
-  let period;
-  switch (periodType) {
-    case 'months':
-      factor = Math.trunc((timeToElapse * 30) / 3);
-      period = timeToElapse * 30;
-      break;
-    case 'weeks':
-      factor = Math.trunc((timeToElapse * 7) / 3);
-      period = timeToElapse * 7;
-      break;
+  const calculateDays = (period, value) => {
+    switch (period) {
+      case 'months':
+        return value * 30;
 
-    default:
-      factor = Math.trunc(timeToElapse / 3);
-      period = timeToElapse;
-      break;
-  }
+      case 'weeks':
+        return value * 7;
+
+      default:
+        return value;
+    }
+  };
 
 
   // global Functions
@@ -42,7 +37,8 @@ const covid19ImpactEstimator = (data) => {
 
   //= ===========impact object computations
   const currentlyInfectedInfact = reportedCases * 10;
-  const infectionsByRequestedTimeImpact = currentlyInfectedInfact * (2 ** factor);
+  const days = calculateDays(periodType, timeToElapse);
+  const infectionsByRequestedTimeImpact = currentlyInfectedInfact * (2 ** Math.trunc(days / 3));
   const impactCasesByRequestedTime = Math.trunc(0.15 * infectionsByRequestedTimeImpact);
   const impactCasesForICU = Math.trunc(0.05 * infectionsByRequestedTimeImpact);
   const impactCasesForVentilators = Math.trunc(0.02 * infectionsByRequestedTimeImpact);
@@ -50,7 +46,7 @@ const covid19ImpactEstimator = (data) => {
 
   //= ===========severe infact object computations
   const currentlyInfectedSevere = reportedCases * 50;
-  const infectionsByRequestedTimeSevere = currentlyInfectedSevere * (2 ** factor);
+  const infectionsByRequestedTimeSevere = currentlyInfectedSevere * (2 ** Math.trunc(days / 3));
   const severeCasesByRequested = Math.trunc(infectionsByRequestedTimeSevere * 0.15);
 
   const severeCasesForICU = Math.trunc(0.05 * infectionsByRequestedTimeSevere);
@@ -66,7 +62,7 @@ const covid19ImpactEstimator = (data) => {
     casesForICUByRequestedTime: impactCasesForICU,
     casesForVentilatorsByRequestedTime: impactCasesForVentilators,
     dollarsInFlight: moneyLost(infectionsByRequestedTimeImpact, region.avgDailyIncomePopulation,
-      region.avgDailyIncomeInUSD, period)
+      region.avgDailyIncomeInUSD, days)
   };
     // severe impact object
 
@@ -80,7 +76,7 @@ const covid19ImpactEstimator = (data) => {
     casesForICUByRequestedTime: severeCasesForICU,
     casesForVentilatorsByRequestedTime: severeCasesForVentilators,
     dollarsInFlight: moneyLost(infectionsByRequestedTimeSevere, region.avgDailyIncomePopulation,
-      region.avgDailyIncomeInUSD, period)
+      region.avgDailyIncomeInUSD, days)
   };
   return {
     data,

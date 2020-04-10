@@ -28,7 +28,7 @@ const covid19ImpactEstimator = (data) => {
   const lostMoney = (infections, avgIncome, avgPopulation, days) => {
     const outcome = infections * avgIncome * avgPopulation;
     const result = (outcome / days);
-    return parseFloat(result);
+    return result;
   };
 
   const icuCases = (infections, num) => {

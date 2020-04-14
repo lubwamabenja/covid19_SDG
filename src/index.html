@@ -6,17 +6,17 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<meta name="Description" content="covid-19 node js estimator">
 <!--===============================================================================================-->
-	<link rel="icon" type="image/png" href="images/icons/favicon.ico"/>
+	<link media="all" rel="icon" type="image/png" href="images/icons/favicon.ico" disabled>
 <!--===============================================================================================-->
-	<link rel="stylesheet" type="text/css" href="vendor/bootstrap/css/bootstrap.min.css">
+	<link media="all" rel="stylesheet" type="text/css" href="vendor/bootstrap/css/bootstrap.min.css" disabled>
 <!--===============================================================================================-->
-	<link rel="stylesheet" type="text/css" href="fonts/font-awesome-4.7.0/css/font-awesome.min.css">
+	<link media="all" rel="stylesheet" type="text/css" href="fonts/font-awesome-4.7.0/css/font-awesome.min.css" disabled>
 <!--===============================================================================================-->
-	<link rel="stylesheet" type="text/css" href="fonts/Linearicons-Free-v1.0.0/icon-font.min.css">
+	<link media="all" rel="stylesheet" type="text/css" href="fonts/Linearicons-Free-v1.0.0/icon-font.min.css" disabled>
 
 <!--===============================================================================================-->
-	<link rel="stylesheet" type="text/css" href="css/util.css">
-	<link rel="stylesheet" type="text/css" href="css/main.css">
+	<link media="all" rel="stylesheet" type="text/css" href="css/util.css" disabled>
+	<link media="all" rel="stylesheet" type="text/css" href="css/main.css" disabled>
 <!--===============================================================================================-->
 </head>
 <body>
@@ -32,29 +32,29 @@
 
 				<label class="label-input100" for="population">Population*</label>
 				<div class="wrap-input100 validate-input" >
-					<input id="data-population" class="input100" type="number"  data-population>
+					<input id="population" name="population" class="input100" type="number"  data-population>
 					<span class="focus-input100"></span>
 				</div>
 
-				<label class="label-input100" for="data-time-to-elapse">Time to Elapse *</label>
+				<label class="label-input100" for="time-to-elapse">Time to Elapse *</label>
 				<div class="wrap-input100 validate-input" >
-					<input id="data-time-to-elapse" class="input100" type="number"  data-time-to-elapse>
+					<input id="time-to-elapse" name="time-to-elapse" class="input100" type="number"  data-time-to-elapse>
 					<span class="focus-input100"></span>
 				</div>
 
-				<label class="label-input100" for="data-reported-cases">Reported Cases</label>
+				<label class="label-input100" for="reported-cases">Reported Cases</label>
 				<div class="wrap-input100">
-					<input id="data-reported-cases" class="input100" type="number"  data-reported-cases>
+					<input id="reported-cases" name="reported-cases" class="input100" type="number"  data-reported-cases>
 					<span class="focus-input100"></span>
 				</div>
-				<label class="label-input100" for="data-total-hospital-beds">Total hospital beds</label>
+				<label class="label-input100" for="total-hospital-beds">Total hospital beds</label>
 				<div class="wrap-input100">
-					<input id="data-total-hospital-beds" class="input100" type="number"  data-total-hospital-beds>
+					<input id="total-hospital-beds" name="total-hospital-beds" class="input100" type="number"  data-total-hospital-beds>
 					<span class="focus-input100"></span>
 				</div>
-				<label class="label-input100" for="data-period-type">Period Type *</label>
+				<label class="label-input100" for="period-type">Period Type *</label>
 				<div class="wrap-input100">
-					<select class="input100"  id="data-period-type" data-period-type>
+					<select class="input100"  id="period-type" name="period-type" data-period-type>
 						<option value="days">Days</option>
 						<option value="weeks">Weeks</option>
 						<option value="months">Months</option>
@@ -64,7 +64,7 @@
 
 				
 				<div class="container-contact100-form-btn">
-					<button class="contact100-form-btn">
+					<button class="contact100-form-btn" data-go-estimate>
 						Submit
 					</button>
 				</div>
@@ -111,8 +111,8 @@
 	<div id="dropDownSelect1"></div>
 
 
-	<script src="vendor/bootstrap/js/popper.js"></script>
-	<script src="vendor/bootstrap/js/bootstrap.min.js"></script>
+	<script src="vendor/bootstrap/js/popper.js" async defer></script>
+	<script src="vendor/bootstrap/js/bootstrap.min.js" async defer></script>
 <!--===============================================================================================-->
 	
 

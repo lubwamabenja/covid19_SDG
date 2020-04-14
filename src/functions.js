@@ -1,55 +1,47 @@
-// Function to calculate days
-export const computeDays = (period, value) => {
-  switch (period) {
-    case 'months' || 'month':
+// function to calculate available
+export const losses = (infectionsByRequestedTime, percentageIncome, avgIncome, days) => {
+  const estimatedLoss = (infectionsByRequestedTime * percentageIncome * avgIncome) / days;
+  return Math.floor(estimatedLoss);
+};
+
+export const calcluateDays = (periodType, value) => {
+  switch (periodType) {
+    case 'months':
       return value * 30;
-    case 'weeks' || 'week':
+
+    case 'weeks':
       return value * 7;
+
     default:
       return value;
   }
 };
 
-// Global Functions
-
-export const lostMoney = (infections, avgIncome, avgPopulation, days) => {
-  const outcome = (infections * avgIncome * avgPopulation) / days;
-  return Math.floor(outcome);
-};
-
-export const availableBeds = (totalHospitalBeds, severeCasesByRequestedTime) => {
-  const occupied = 0.65 * totalHospitalBeds;
-  const available = totalHospitalBeds - occupied;
-  return Math.trunc(available - severeCasesByRequestedTime);
-};
-
-export const infectionProjections = (currentlyInfected, days) => {
-  const projection = currentlyInfected * (2 ** Math.floor(days / 3));
-  return projection;
-};
-
 export const prototypeEstimator = ({
   reportedCases,
+  totalHospitalBeds,
   periodType,
   timeToElapse,
-  totalHospitalBeds,
   region
-}, infectedPeople) => {
-  // calculations
-  const currentlyInfected = reportedCases * infectedPeople;
-  const days = computeDays(periodType, timeToElapse);
-  const infectionsByRequestedTime = infectionProjections(currentlyInfected, days);
+}, infectedCases) => {
+  const numberOfDays = calcluateDays(periodType, timeToElapse);
+  const currentlyInfected = reportedCases * infectedCases;
+  const infectionsByRequestedTime = currentlyInfected * (2 ** Math.floor(numberOfDays / 3));
   const severeCasesByRequestedTime = 0.15 * infectionsByRequestedTime;
 
-  // object properties
   return {
     currentlyInfected,
     infectionsByRequestedTime,
     severeCasesByRequestedTime,
-    hospitalBedsByRequestedTime: availableBeds(totalHospitalBeds, severeCasesByRequestedTime),
+    hospitalBedsByRequestedTime: Math.trunc((totalHospitalBeds * 0.35)
+    - severeCasesByRequestedTime),
     casesForICUByRequestedTime: Math.floor(0.05 * infectionsByRequestedTime),
     casesForVentilatorsByRequestedTime: Math.floor(0.02 * infectionsByRequestedTime),
-    dollarsInFlight: lostMoney(infectionsByRequestedTime * region.avgDailyIncomeInUSD
-      * region.avgDailyIncomePopulation, days)
+    dollarsInFlight: losses(
+      infectionsByRequestedTime,
+      region.avgDailyIncomePopulation,
+      region.avgDailyIncomeInUSD,
+      numberOfDays
+    )
   };
 };
